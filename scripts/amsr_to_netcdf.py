@@ -21,7 +21,7 @@ for r in range(ncols):
     lons += [(r + r0 - (ncols - 1)) * C / R / np.cos(np.pi/6) * 180 / np.pi]
 
 for s in range(nrows):
-    lt = np.arcsin(-(s + s0 - (nrols - 1)) * C / R * np.cos(np.pi/6)) * 180 / np.pi
+    lt = np.arcsin(-(s + s0 - (nrows - 1)) * C / R * np.cos(np.pi/6)) * 180 / np.pi
     lats += [lt]
 
 lats = np.array(lats)
@@ -30,8 +30,8 @@ prev_year = None
 sm_data = []
 
 for f in sorted(os.listdir(raw_dir)):
-    fpath = os.path.join(raw_dir, f)
     print f
+    fpath = os.path.join(raw_dir, f)
     s = f.split("_")
     year = int(s[5][:4])
     month = int(s[5][4:6])
@@ -42,17 +42,15 @@ for f in sorted(os.listdir(raw_dir)):
     tp = hdf.select("A_Land_Surface_Temp")
 
     if year != prev_year:
-        print year, prev_year
         if len(sm_data) > 0:
-            sm_data = np.concatenate(sm_data, axis=2)
-            tp_data = np.concatenate(tp_data, axis=2)
-            #sm_data[(sm_data == 9999) | (sm_data == -9999)] = np.nan
-            #to_data[(tp_data == 9999) | (tp_data == -9999)] = np.nan
+            sm_data = np.concatenate(sm_data, axis=2).astype('float32')
+            tp_data = np.concatenate(tp_data, axis=2).astype('float32')
+            sm_data[(sm_data == 9999) | (sm_data == -9999)] = np.nan
+            tp_data[(tp_data == 9999) | (tp_data == -9999)] = np.nan
             dr_sm = xr.DataArray(sm_data, coords=[lats, lons, times], dims=['lat', 'lon', 'time'])
             dr_tp = xr.DataArray(tp_data, coords=[lats, lons, times], dims=['lat', 'lon', 'time'])
-            dr_sm[dr_sm == 9999] = np.nan
             ds = xr.Dataset(dict(temperature=dr_tp, soil_moisture=dr_sm))
-            ds.to_netcdf(os.path.join(netcdf_dir, "amsr_daily_%i.nc" % year))
+            ds.to_netcdf(os.path.join(netcdf_dir, "amsr_daily_%i.nc" % prev_year))
 
         sm_data = []
         tp_data = []
