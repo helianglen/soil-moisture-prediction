@@ -30,3 +30,8 @@ for f in sorted(os.listdir(file_dir)):
     prcp = np.reshape(prcp, (400, 1440))
     prcp[prcp < -9999] = np.nan
     data.append(prcp[:, :, np.newaxis])
+
+data = np.concatenate(data, axis=2)
+dr = xr.DataArray(data, coords=[lats, lons, dates], dims=['lat', 'lon', 'time'])
+ds = xr.Dataset(dict(prcp=dr))
+ds.to_netcdf(os.path.join(netcdf_dir, "trmm_3B42_%i.nc" % prev_year))

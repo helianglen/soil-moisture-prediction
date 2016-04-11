@@ -60,3 +60,12 @@ for f in sorted(os.listdir(raw_dir)):
     tp_data += [tp[:][:,:,np.newaxis]]
     times += [dt.datetime(year, month, day)]
     prev_year = year
+
+sm_data = np.concatenate(sm_data, axis=2).astype('float32')
+tp_data = np.concatenate(tp_data, axis=2).astype('float32')
+sm_data[(sm_data == 9999) | (sm_data == -9999)] = np.nan
+tp_data[(tp_data == 9999) | (tp_data == -9999)] = np.nan
+dr_sm = xr.DataArray(sm_data, coords=[lats, lons, times], dims=['lat', 'lon', 'time'])
+dr_tp = xr.DataArray(tp_data, coords=[lats, lons, times], dims=['lat', 'lon', 'time'])
+ds = xr.Dataset(dict(temperature=dr_tp, soil_moisture=dr_sm))
+ds.to_netcdf(os.path.join(netcdf_dir, "amsr_daily_%i.nc" % prev_year))
