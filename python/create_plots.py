@@ -7,11 +7,9 @@ import seaborn as sns
 sns.set_context("paper", font_scale=2.)
 import matplotlib as mpl
 mpl.rcParams['figure.figsize'] = 12, 8
-from sklearn import gaussian_process
 
 
-
-datafile = "sm_37_90.csv"
+datafile = "sm_36.888_-90.804.csv"
 df = pd.read_csv(datafile)
 df['time'] = pd.to_datetime(df['time'])
 df = df.set_index('time')
