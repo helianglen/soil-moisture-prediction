@@ -27,3 +27,10 @@ def create_dataset(lat, lon, outfile):
     df['days_missing'] = daydiff
     df.to_csv(outfile)
     return df
+
+
+if __name__ == "__main__":
+    lat = 36.888
+    lon = -90.804
+    outfile = "sm_%0.3f_%0.3f.csv" % (lat, lon)
+    df = create_dataset(lat, lon, outfile)
